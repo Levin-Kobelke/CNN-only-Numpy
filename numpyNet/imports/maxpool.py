@@ -4,7 +4,7 @@ class maxpool:
                 self.size=size
                 self.stride=stride
             def forward(self,inputs):
-                from lowerimports.im2col_indices import im2col_indices
+                from imports.lowerimports.im2col_indices import im2col_indices
                 #to copy stanford code in need to reorganize axis
                 #input is (h,w,d,n) stanford(n,d,h,w)
                 self.inputs=inputs
@@ -37,7 +37,7 @@ class maxpool:
                 #output is (h_out,w_out,d,n) stanford(n,d,h,w)
             def backward(self,dvalues):
                 # X_col and max_idx are the intermediate variables from the forward propagation step
-                from lowerimports.col2im_indices import col2im_indices
+                from imports.lowerimports.col2im_indices import col2im_indices
                 # Suppose our output from forward propagation step is 5x10x14x14
                 # We want to upscale that back to 5x10x28x28, as in the forward step
                 

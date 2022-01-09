@@ -1,16 +1,17 @@
+import numpy as np
 class Activation_Softmax_Loss_CategoricalCrossentropy():
     
     def __init__(self):
-        from Activation_Softmax import Activation_Softmax
-        from Loss_CategoricalCrossEntropy import Loss_CategoricalCrossEntropy
+        from imports.Activation_Softmax import Activation_Softmax
+        from imports.Loss_CategoricalCrossEntropy import Loss_CategoricalCrossEntropy
         self.activation = Activation_Softmax()
         self.loss       = Loss_CategoricalCrossEntropy()
         
     def forward(self, inputs, y_true):
         self.activation.forward(inputs)
         self.output = self.activation.output#the probabilities
-        #calculates and returns mean loss
-        return(self.loss.calculate(self.output, y_true))
+        self.outputloss = self.loss.calculate(self.output, y_true)        #calculates and returns mean loss
+        return(self.outputloss)
         
     def backward(self, dvalues, y_true):
         Nsamples = len(dvalues)

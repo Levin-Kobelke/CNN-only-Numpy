@@ -33,7 +33,7 @@ class Loss_CategoricalCrossEntropy(Loss):
             if len(y_true.shape) == 1:
             #"eye" turns it into a diag matrix, then indexing via the label
             #itself
-            y_true = np.eye(Nlabels)[y_true]
+                y_true = np.eye(Nlabels)[y_true]
             #normalized gradient
             self.dinputs = -y_true/dvalues/Nsamples
             #this is the local derivative

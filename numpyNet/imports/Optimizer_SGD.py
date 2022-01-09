@@ -1,3 +1,7 @@
+import numpy
+
+
+import numpy as np
 class Optimizer_SGD:
     #initializing with a default learning rate of 0.1
     def __init__(self, learning_rate = 0.01, decay = 0, momentum = 0):

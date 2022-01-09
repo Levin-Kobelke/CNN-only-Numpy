@@ -54,7 +54,7 @@ class Layer_conv:
                 self: self object with filters and bias to apply
                 function calculates covolution with input for each filter
                 """
-                from lowerimports.conv_with_padding_3 import conv_with_padding_3
+                from imports.lowerimports.conv_with_padding_3 import conv_with_padding_3
                 #imports conv function
                 
                 self.output = np.zeros((inputs.shape[0],inputs.shape[1],self.n_neurons,inputs.shape[3]))
@@ -79,7 +79,7 @@ class Layer_conv:
             # defining our activation function      
             def backward(self, dvalues):
                 #I want to multiplz the dvalues for a filter with all input channels
-                from lowerimports.conv_with_padding_3 import conv_with_padding_3
+                from imports.lowerimports.conv_with_padding_3 import conv_with_padding_3
         
                 
                 #then I sum over the multiplicated image dependend on which weight i 

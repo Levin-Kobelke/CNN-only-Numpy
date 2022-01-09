@@ -1,3 +1,4 @@
+import numpy as np
 class Layer_Dense:
         #dense layer is build for more inputs than 1 img
             def __init__(self, n_inputs, n_neurons):
