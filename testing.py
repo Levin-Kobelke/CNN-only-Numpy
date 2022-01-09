@@ -7,3 +7,5 @@ print(sys.version)
 name = input("your name?")
 
 print(name)
+
+new = 'new'
