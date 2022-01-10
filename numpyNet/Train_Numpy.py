@@ -119,6 +119,7 @@ for epoch in range(1):
         print(f'Current interation is: {iter}')
         print(f'Current accuracy is: {accuracy}')
         print(f'Current loss is: {loss}')
+        print(f'Filter new {Conv1.weights[0,0,0,0]} dweight {Conv1.dweights[0,0,0,0]}')
  
 
         monitor[1,iter+359*epoch]=accuracy

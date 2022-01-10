@@ -28,7 +28,6 @@ import os
 #I use transforms to bring image data into torch tensor format
 #I use target_transform to bring integer classes into one hot vector
 
-print(os.getcwd())
 training_data = CustomImageDataset(
     './numpyNet/data/dataloader_train.csv',
     './numpyNet/data/train_renamed/',
@@ -55,7 +54,6 @@ test_dataloader = DataLoader(test_data, batch_size=64, shuffle=True)
 
 #testing the dataloader
 
-train_features, train_labels = next(iter(train_dataloader))
 #defining the class
 def labelToClass(label):
     if(label ==0):
@@ -83,11 +81,12 @@ class simpleCNN(nn.Module):
     def __init__(self):
         super(simpleCNN, self).__init__()
         self.LayerStack=nn.Sequential(
-            nn.Conv2d(3, 32, 3,padding=1),
+            nn.Conv2d(3, 6, 5),
             nn.ReLU(),
-            nn.MaxPool2d(4,2),
+            nn.MaxPool2d(2,2),
+            nn.Conv2d(6,16,5),
             nn.Flatten(),
-            nn.Linear(131072, 100),
+            nn.Linear(238144, 100),
             nn.ReLU(),
             nn.Linear(100, 2),
             nn.Softmax()
@@ -98,7 +97,6 @@ class simpleCNN(nn.Module):
     
 model = simpleCNN().to('cpu')
 
-probs = model(train_features)
 #probs is the output after the softmax. So the model probabilities
 # for the 2 classes
 
@@ -110,16 +108,18 @@ criterion = nn.CrossEntropyLoss()
 
 #optimizer is SGD
 
-optimizer = optim.SGD(model.parameters(), lr=0.0002, momentum=0.1)
+optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 
 #mointoring the loss and accuracy per iteration 
 monitor = np.zeros((2,2000))
 
-for epoch in range(0):
+for epoch in range(5):
     running_loss=0.0
     for iter, data in enumerate(train_dataloader,start=0):
         #you can think of data as next(iter(DataLoader)) because enumerate calls next in a for loop
         inputs, labels = data
+
+        optimizer.zero_grad()
         #now data goes through the CNN and returns class probabilities
         probs=model(inputs)
         #categorical cross entropy to calculate the loss
@@ -141,12 +141,16 @@ for epoch in range(0):
         accuracy=correct/total
         monitor[1,iter+360*epoch]=accuracy
         monitor[0,iter+360*epoch]=loss
+        print(f'loss {loss} accuracy {accuracy} iteration {iter}')
         
 fig, ax = plt.subplots(2,1)
-ax[0].plot(np.arange(iter),monitor[0,0:iter])
+ax[0].plot(np.arange(360),monitor[0,0:360])
 ax[0].set_title('loss')
-ax[1].plot(np.arange(iter),monitor[1,0:iter])
+ax[1].plot(np.arange(360),monitor[1,0:360])
 ax[1].set_title('Accuracy')
+plt.savefig('foo.png')
+plt.savefig('foo.pdf')
+
 fig.show()
 
 fig, ax = plt.subplots(2,1)
@@ -154,6 +158,8 @@ ax[0].plot(np.arange(1439),monitor[0,:1439])
 ax[0].set_title('loss')
 ax[1].plot(np.arange(1439),monitor[1,:1439])
 ax[1].set_title('Accuracy')
+plt.savefig('foo2.png')
+plt.savefig('foo2.pdf')
 fig.show()
 
 PATH = './dogs_Torch_net.pth'

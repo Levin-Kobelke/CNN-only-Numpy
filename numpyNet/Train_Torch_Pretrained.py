@@ -40,8 +40,8 @@ from torchvision import models
 #I use transforms to bring image data into torch tensor format
 #I use target_transform to bring integer classes into one hot vector
 training_data = CustomImageDataset(
-    './dataloader_train.csv',
-    './train_renamed/',
+    './numpyNet/data/dataloader_train.csv',
+    './numpyNet/data/train_renamed/',
     transform=Lambda(lambda x: x.type(torch.float32)),
     target_transform=Lambda(lambda y: torch.zeros(2,
                                                   dtype=torch.float)
@@ -49,8 +49,8 @@ training_data = CustomImageDataset(
     )
                                    
 test_data = CustomImageDataset(
-    './dataloader_test.csv',
-    './test_renamed/',
+    './numpyNet/data/dataloader_test.csv',
+    './numpyNet/data/test_renamed/',
     #transform=ToTensor(),
     target_transform=Lambda(lambda y: torch.zeros(2,
                                                   dtype=torch.float)
@@ -138,7 +138,8 @@ for epoch in range(1):
         accuracy=correct/total
         monitor[1,iter+360*epoch]=accuracy
         monitor[0,iter+360*epoch]=loss
-        
+        print(f'loss {loss} accuracy {accuracy} iteration {iter}')
+
 fig, ax = plt.subplots(2,1)
 ax[0].plot(np.arange(iter),monitor[0,0:iter])
 ax[0].set_title('loss')
@@ -151,6 +152,8 @@ ax[0].plot(np.arange(1439),monitor[0,:1439])
 ax[0].set_title('loss')
 ax[1].plot(np.arange(1439),monitor[1,:1439])
 ax[1].set_title('Accuracy')
+plt.savefig('pretrained.png')
+plt.savefig('pretrained.pdf')
 fig.show()
 
 PATH = './dogs_Torch_net_res.pth'
