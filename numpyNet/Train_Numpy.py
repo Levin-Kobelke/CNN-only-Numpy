@@ -1,7 +1,11 @@
+"""
+The training code lifes in this file. 
+First I import all the custom written classes and then I try and train the network on the cats vs dogs dataset
+"""
+
+
 import numpy as np
-import skimage
 import matplotlib.pyplot as plt
-from torch.nn.modules.activation import Softmax
 
 from imports.Layer_conv import Layer_conv
 from imports.Layer_dense import Layer_Dense
@@ -12,6 +16,10 @@ from imports.Optimizer_SGD import Optimizer_SGD
 from imports.flatten import flatten
 from imports.npcustomdataset import CustomImageDataLoader
 from imports.Activation_Softmax import Activation_Softmax
+
+#imports all the custom written classses and matplot+numpy
+
+
 
 
 #testing the dataloader
@@ -49,10 +57,12 @@ Softmax1 = Activation_Softmax()
 loss_activation = Activation_Softmax_Loss_CategoricalCrossentropy()
 Optimizer_SGD = Optimizer_SGD(learning_rate=0.001, momentum=0.9)
 
-
-#begining the training loop
+#this returns an iterable object that outputs batchsize images and there label until it is exhausted
 TrainLoader = CustomImageDataLoader('numpyNet/data/dataloader_train.csv','numpyNet/data/train_renamed', batchsize=64)
 
+
+
+#begining the training loop
 
 monitor = np.zeros((2,2000))
 
@@ -79,7 +89,7 @@ for epoch in range(1):
         Dense2.forward(ReLU2.output)
         loss_activation.forward(Dense2.output, truth)
 
-        #now I need to do back prop. Prey and Spray
+        #now I need to do back prop
         loss_activation.backward(loss_activation.output, truth)
         Dense2.backward(loss_activation.dinputs)
         ReLU2.backward(Dense2.dinputs)
@@ -88,6 +98,7 @@ for epoch in range(1):
         Max1.backward(Flatten1.dinputs)
         ReLU1.backward(Max1.dinputs)
         Conv1.backward(ReLU1.dinputs)
+
         #In the backprob the gradients are stored in dweights and dbiases
         #now the optimizer needs to step and we can repeat
         Optimizer_SGD.post_update_params()
@@ -117,12 +128,5 @@ fig, ax = plt.subplots(2,1)
 ax[0].plot(np.arange(iter),monitor[0,0:iter])
 ax[0].set_title('loss')
 ax[1].plot(np.arange(iter),monitor[1,0:iter])
-ax[1].set_title('Accuracy')
-fig.show()
-
-fig, ax = plt.subplots(2,1)
-ax[0].plot(np.arange(1439),monitor[0,:1439])
-ax[0].set_title('loss')
-ax[1].plot(np.arange(1439),monitor[1,:1439])
 ax[1].set_title('Accuracy')
 fig.show()

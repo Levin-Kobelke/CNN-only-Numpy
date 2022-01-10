@@ -21,14 +21,17 @@ from torch.utils.data import DataLoader
 from torchvision.transforms import ToTensor, Lambda
 import torch.optim as optim
 import numpy as np
+import os
 #Custom image Dataset is a class containing the necessary functions
 #to make a dataset usable for the pytorch dataloader
 
 #I use transforms to bring image data into torch tensor format
 #I use target_transform to bring integer classes into one hot vector
+
+print(os.getcwd())
 training_data = CustomImageDataset(
-    './dataloader_train.csv',
-    './train_renamed/',
+    './numpyNet/data/dataloader_train.csv',
+    './numpyNet/data/train_renamed/',
     transform=Lambda(lambda x: x.type(torch.float32)),
     target_transform=Lambda(lambda y: torch.zeros(2,
                                                   dtype=torch.float)
@@ -36,8 +39,8 @@ training_data = CustomImageDataset(
     )
                                    
 test_data = CustomImageDataset(
-    './dataloader_test.csv',
-    './test_renamed/',
+    './numpyNet/data/dataloader_test.csv',
+    './numpyNet/data/test_renamed/',
     #transform=ToTensor(),
     target_transform=Lambda(lambda y: torch.zeros(2,
                                                   dtype=torch.float)
@@ -112,7 +115,7 @@ optimizer = optim.SGD(model.parameters(), lr=0.0002, momentum=0.1)
 #mointoring the loss and accuracy per iteration 
 monitor = np.zeros((2,2000))
 
-for epoch in range(4):
+for epoch in range(0):
     running_loss=0.0
     for iter, data in enumerate(train_dataloader,start=0):
         #you can think of data as next(iter(DataLoader)) because enumerate calls next in a for loop

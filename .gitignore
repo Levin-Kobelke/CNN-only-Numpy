@@ -1,5 +1,6 @@
 .vscode
 numpyNet/data/test_renamed
 numpyNet/data/train_renamed
+numpyNet/Training_Conv_wBatches_Kaggle_2.py
 
 

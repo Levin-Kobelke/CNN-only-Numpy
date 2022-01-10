@@ -3,11 +3,14 @@ import numpy as np
  
 class Layer_conv:
             """
-            Should take as input data from the previous layer and return one value
-            All weights of one filter learned together
-            define stepsize and padding
-            define filter size
+            Should take as input data from the previous layer in format H,W,C,N height, width, channel, Number
+            and return H,W,C,N where H,W is dependent on the filter size and step size, but are equal to the inputs for
+            padding = 1, Stride = 1 and filter size = 3 (most common)
+            Stepszide and padding is always 1 for simplizity of this project
+            C is the number of different filters used for convolution and N as image indicater does not change too
             filters are randomly innitiated
+
+            This is the most likly file to contain mathematical errors. Please read carefully if there are any mistakes in computing the backwards part!
             """
                 
             def __init__(self, n_neurons = 1,input_channels = 3,size = 3):
@@ -17,10 +20,9 @@ class Layer_conv:
                 Parameters
                 ----------
                 n_neurons : int, optional
-                    How many different classes of neurons to create. The default is 0, because you are supposed to use first in the
-                    case you don't want to set a specific amounts of neuron classes.
+                    How many different classes of neurons(e.g. filters) to create. 
                 input_channels: int
-                    Number of channels the input has. Channels output = n_neurons!
+                    Number of channels the input has.
                 size : int, odd, optional
                     kernel size for the convolution. The default is 3.
                 Returns
@@ -129,7 +131,8 @@ class Layer_conv:
 
                 gradients_bias=np.average(gradients_bias,axis=1)
                 #calculate average over images
-                #self.dbiases = np.tile(gradients_bias,(3,1))
+
+                #need to clone the bias for all three input channels
                 self.dbiases = np.tile(gradients_bias,(self.input_channels,1))
 
                 
