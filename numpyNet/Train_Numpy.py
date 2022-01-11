@@ -78,6 +78,13 @@ for epoch in range(1):
                 truth[n,0] = 1
             else:
                 truth[n,1] = 1
+        #normalizing the inputs by subtracting mean and dividing by sd
+        #output[channel] = (input[channel] - mean[channel]) / std[channel]
+
+
+        inputs= (inputs - np.mean(inputs, axis = (0,1))) / np.std(inputs,axis=(0,1))
+        #print(np.mean(inputs, axis = (0,1)))
+        #print(np.std(inputs, axis = (0,1)))
 
         #now data goes through the CNN and returns class probabilities
         Conv1.forward(inputs)

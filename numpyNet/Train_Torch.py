@@ -19,23 +19,44 @@ import matplotlib.pyplot as plt
 from imports.customdataset import CustomImageDataset
 from torch.utils.data import DataLoader
 from torchvision.transforms import ToTensor, Lambda
+import torchvision.transforms as transforms
 import torch.optim as optim
 import numpy as np
-import os
+import torch.nn.functional as F
 #Custom image Dataset is a class containing the necessary functions
 #to make a dataset usable for the pytorch dataloader
 
 #I use transforms to bring image data into torch tensor format
 #I use target_transform to bring integer classes into one hot vector
 
+transform = transforms.Compose(
+    [   transforms.ToTensor(),
+        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+
 training_data = CustomImageDataset(
     './numpyNet/data/dataloader_train.csv',
     './numpyNet/data/train_renamed/',
-    transform=Lambda(lambda x: x.type(torch.float32)),
+    transform=transform,
     target_transform=Lambda(lambda y: torch.zeros(2,
                                                   dtype=torch.float)
                             .scatter_(dim=0, index=y,value=torch.tensor(1, dtype=torch.uint8)))
     )
+
+
+
+
+
+
+
+
+# training_data = CustomImageDataset(
+#     './numpyNet/data/dataloader_train.csv',
+#     './numpyNet/data/train_renamed/',
+#     transform=Lambda(lambda x: x.type(torch.float32)),
+#     target_transform=Lambda(lambda y: torch.zeros(2,
+#                                                   dtype=torch.float)
+#                             .scatter_(dim=0, index=y,value=torch.tensor(1, dtype=torch.uint8)))
+#     )
                                    
 test_data = CustomImageDataset(
     './numpyNet/data/dataloader_test.csv',
@@ -60,6 +81,9 @@ def labelToClass(label):
         return 'cat'
     else:
         return 'dog'
+
+dataiter = iter(train_dataloader)
+images, labels = dataiter.next()
 #plot 6 examples from the data
 # fig, ax = plt.subplots(2,3)
 # #ax[0,0].imshow(train_features[0].permute(1,2,0))
@@ -80,25 +104,26 @@ from torch import nn
 class simpleCNN(nn.Module):
     def __init__(self):
         super(simpleCNN, self).__init__()
-        self.LayerStack=nn.Sequential(
-            nn.Conv2d(3, 6, 5),
-            nn.ReLU(),
-            nn.MaxPool2d(2,2),
-            nn.Conv2d(6,16,5),
-            nn.Flatten(),
-            nn.Linear(238144, 100),
-            nn.ReLU(),
-            nn.Linear(100, 2),
-            nn.Softmax()
-            )
-    def forward(self,Input):
-        probs=self.LayerStack(Input)
-        return probs
+        self.conv1 = nn.Conv2d(3, 6, 5)
+        self.pool = nn.MaxPool2d(2, 2)
+        self.conv2 = nn.Conv2d(6, 16, 5)
+        self.fc1 = nn.Linear(59536, 128)
+        self.fc2 = nn.Linear(128, 64)
+        self.fc3 = nn.Linear(64, 2)
+
+    def forward(self, x):
+        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.relu(self.conv2(x)))
+        x = torch.flatten(x, 1) # flatten all dimensions except batch
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
+model = simpleCNN()
     
 model = simpleCNN().to('cpu')
 
-#probs is the output after the softmax. So the model probabilities
-# for the 2 classes
+
 
 #now I will define the optimizer and loss criterion
 
@@ -111,19 +136,20 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 
 #mointoring the loss and accuracy per iteration 
-monitor = np.zeros((2,2000))
+maxepochs = 10
+monitor = np.zeros((2,maxepochs*360))
 
-for epoch in range(5):
+for epoch in range(maxepochs):
     running_loss=0.0
     for iter, data in enumerate(train_dataloader,start=0):
         #you can think of data as next(iter(DataLoader)) because enumerate calls next in a for loop
         inputs, labels = data
-
+        # zero the parameter gradients
         optimizer.zero_grad()
         #now data goes through the CNN and returns class probabilities
-        probs=model(inputs)
+        output=model(inputs)
         #categorical cross entropy to calculate the loss
-        loss = criterion(probs, labels)
+        loss = criterion(output, labels)
         #now I need to do back prop. this is insanly easy using the torch framework
         loss.backward()
         #finally the gradient needs to step once per iteration since we do SGD
@@ -135,7 +161,7 @@ for epoch in range(5):
         
         correct=0
         total=0
-        _,predicted = torch.max(probs.data,1)
+        _,predicted = torch.max(output.data,1)
         total=labels.size(0)
         correct=(labels[:,1]==predicted).sum()
         accuracy=correct/total
@@ -148,8 +174,8 @@ ax[0].plot(np.arange(360),monitor[0,0:360])
 ax[0].set_title('loss')
 ax[1].plot(np.arange(360),monitor[1,0:360])
 ax[1].set_title('Accuracy')
-plt.savefig('foo.png')
-plt.savefig('foo.pdf')
+plt.savefig('torch.png')
+plt.savefig('torch.pdf')
 
 fig.show()
 
@@ -158,8 +184,8 @@ ax[0].plot(np.arange(1439),monitor[0,:1439])
 ax[0].set_title('loss')
 ax[1].plot(np.arange(1439),monitor[1,:1439])
 ax[1].set_title('Accuracy')
-plt.savefig('foo2.png')
-plt.savefig('foo2.pdf')
+plt.savefig('torch2.png')
+plt.savefig('torch2.pdf')
 fig.show()
 
 PATH = './dogs_Torch_net.pth'
