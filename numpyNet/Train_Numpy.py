@@ -7,7 +7,7 @@ First I import all the custom written classes and then I try and train the netwo
 import numpy as np
 import matplotlib.pyplot as plt
 
-from imports.Layer_conv import Layer_conv
+from imports.Layer_conv_V2 import Layer_conv
 from imports.Layer_dense import Layer_Dense
 from imports.maxpool import maxpool
 from imports.Activation_ReLU import Activation_ReLU
@@ -95,7 +95,7 @@ for epoch in range(1):
         ReLU2.forward(Dense1.output)
         Dense2.forward(ReLU2.output)
         loss_activation.forward(Dense2.output, truth)
-
+        print('before backprob')
         #now I need to do back prop
         loss_activation.backward(loss_activation.output, truth)
         Dense2.backward(loss_activation.dinputs)
@@ -108,12 +108,13 @@ for epoch in range(1):
 
         #In the backprob the gradients are stored in dweights and dbiases
         #now the optimizer needs to step and we can repeat
+        print('before optim')
         Optimizer_SGD.post_update_params()
         Optimizer_SGD.update_params(Conv1)
         Optimizer_SGD.update_params(Dense1)
         Optimizer_SGD.update_params(Dense2)
         Optimizer_SGD.post_update_params
-                
+        print('after optim')
         #calculate accuracy
         predictions = np.argmax(loss_activation.output, axis = 1)
         if len(truth.shape) == 2:

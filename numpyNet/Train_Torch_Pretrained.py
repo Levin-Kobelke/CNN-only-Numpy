@@ -107,7 +107,7 @@ criterion = nn.CrossEntropyLoss()
 
 #optimizer is SGD
 
-optimizer = optim.SGD(model.parameters(), lr=0.0002, momentum=0.1)
+optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
 
 #mointoring the loss and accuracy per iteration 
 monitor = np.zeros((2,2000))
@@ -145,6 +145,8 @@ ax[0].plot(np.arange(iter),monitor[0,0:iter])
 ax[0].set_title('loss')
 ax[1].plot(np.arange(iter),monitor[1,0:iter])
 ax[1].set_title('Accuracy')
+plt.savefig('pretrained.png')
+plt.savefig('pretrained.pdf')
 fig.show()
 
 fig, ax = plt.subplots(2,1)
@@ -152,8 +154,6 @@ ax[0].plot(np.arange(1439),monitor[0,:1439])
 ax[0].set_title('loss')
 ax[1].plot(np.arange(1439),monitor[1,:1439])
 ax[1].set_title('Accuracy')
-plt.savefig('pretrained.png')
-plt.savefig('pretrained.pdf')
 fig.show()
 
 PATH = './dogs_Torch_net_res.pth'
