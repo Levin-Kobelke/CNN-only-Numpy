@@ -95,7 +95,7 @@ class Layer_conv:
 
                 #initalize with correct shapes
                 dweights = np.zeros((f,f,n_C_prev,n_C))
-                dbias = np.zeros((1,1,1,n_C))
+                dbias = np.zeros((3,n_C))
                 dinputs = np.zeros((n_H_prev,n_W_prev, n_C_prev,m))
 
                 # npad is a tuple of (n_before, n_after) for each dimension
@@ -110,37 +110,30 @@ class Layer_conv:
                     # select ith training example from A_prev_pad and dA_prev_pad
 
                     inputImg = inp_padded[:,:,:,i]
-                    dinputImg = dinputs_padded[:,:,:,i]
-                    for h in range(n_H):                   # loop over vertical axis of the output volume
-                        for w in range(n_W):               # loop over horizontal axis of the output volume
-                            for c in range(n_C):           # loop over the channels of the output volume
+                    dinputImg = np.zeros((n_H_prev,n_W_prev,n_C_prev))
 
-                                # Find the corners of the current "slice"
-                                row_start = h
-                                row_end = row_start + f
-                                col_start = w
-                                col_end = col_start + f
+                    #updating the gradients using the math derivatives
+                    #dinputImg[row_start:row_end,col_start:col_end,:]+= weights[:,:,:,c]*dvalues[h,w,c,i]
+                    intermediate = np.expand_dims(weights, axis = (3,4)) *np.expand_dims(dvalues[:,:,:,i],axis=(0,1,2))
+                    dinputImg[:,:,:] += np.transpose(np.sum(intermediate, axis = (0,1,5)), axes=(1,2,0))
+                    #dweights[:,:,:,c] += inp_slice * dvalues[h, w, c,i]
+                    inp_sliced = np.lib.stride_tricks.sliding_window_view(inputImg, window_shape = (3,3,3), axis = (0,1,2))
+                    inp_sliced = np.squeeze(inp_sliced)
+                    dweights[:,:,:,:] += np.sum(np.expand_dims(inp_sliced,axis=5)
+                                            *np.expand_dims(dvalues[:,:,:,i],axis=(2,3,4)),axis=(0,1))
 
-                                #getting the slice
-                                inp_slice = inputImg[row_start:row_end,col_start:col_end]
-
-                                #updating the gradients using the math derivatives
-                                dinputImg[row_start:row_end,col_start:col_end,:]+= weights[:,:,:,c]*dvalues[h,w,c,i]
-
-                                dweights[:,:,:,c] += inp_slice * dvalues[h, w, c,i]
-                                dbias[:,:,:,c] += dvalues[h, w, c,i]
-
-                                # i need to get rid of the loop
-                                #weight should be solvable with np.lib.stridea as strided and broadcasting dvalues onto it
-                                # inp_slice needs to be replaced by the strided array which can then be multiplied with
-                                #dvalues i
-                                #bias is just a sum right?
-                                #dinputs is tricky but I think if I expant dvalues so each value can be broadcastet to a 3,3,3 cube
-                                # and i also expand the weight to become be broadcastet to 256 by 256 and then sum
-                                #over the filter width,height and filter type dimension it should fit the loop
+                    dbias[:,:] += np.ones((n_C_prev,n_C)) *np.sum(dvalues[:,:,:,i],axis=(0,1))
+                    # i need to get rid of the loop
+                    #weight should be solvable with np.lib.stridea as strided and broadcasting dvalues onto it
+                    # inp_slice needs to be replaced by the strided array which can then be multiplied with
+                    #dvalues i
+                    #bias is just a sum right?
+                    #dinputs is tricky but I think if I expant dvalues so each value can be broadcastet to a 3,3,3 cube
+                    # and i also expand the weight to become be broadcastet to 256 by 256 and then sum
+                    #over the filter width,height and filter type dimension it should fit the loop
                     # Set the ith training example's dA_prev to the unpaded da_prev_pad (Hint: use X[pad:-pad, pad:-pad, :])
                     pad = int(f/2)
-                    dinputs[:, :, :,i] = dinputImg[pad:-pad, pad:-pad, :]
+                    dinputs[:, :, :,i] = dinputImg
                 self.dweights = dweights
                 self.dinputs = dinputs
-                self.dbias = dbias
+                self.dbiases = dbias
