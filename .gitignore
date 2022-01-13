@@ -1,0 +1,15 @@
+.vscode
+numpyNet/data/test_renamed
+numpyNet/data/train_renamed
+numpyNet/Training_Conv_wBatches_Kaggle_2.py
+numpyNet/Cifar10_tutorial.py
+Numpy_net.pkl
+data
+foo.pdf
+foo.png
+foo2.pdf
+foo2.png
+pretrained.png
+torch.png
+dogs_Torch_net.pth
+dogs_Torch_net_res.pth
