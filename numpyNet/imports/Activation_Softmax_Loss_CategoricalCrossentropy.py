@@ -2,8 +2,8 @@ import numpy as np
 class Activation_Softmax_Loss_CategoricalCrossentropy():
     
     def __init__(self):
-        from imports.Activation_Softmax import Activation_Softmax
-        from imports.Loss_CategoricalCrossEntropy import Loss_CategoricalCrossEntropy
+        from imports.activation_softmax import Activation_Softmax
+        from imports.loss_categoricalcrossentropy import Loss_CategoricalCrossEntropy
         self.activation = Activation_Softmax()
         self.loss       = Loss_CategoricalCrossEntropy()
         

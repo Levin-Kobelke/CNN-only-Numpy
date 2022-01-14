@@ -1,5 +1,5 @@
 import numpy as np
-class maxpool:
+class Maxpool:
             def __init__(self,size,stride):
                 self.size=size
                 self.stride=stride
