@@ -9,4 +9,4 @@ The Training and Testing Data is located at "dropbox" link https://www.dropbox.c
 After downloading the folders training_renamed and testing_renamed have to be copied into /numpyNet/data/ where the csv files live.
 Optionally, you could also change the "img_dir" argument for the DataLoader to the dir of the testing/training images if you do not want to have the images in the /numpyNet/data/ folder
 
-To train the network execute the three train_* files in the folder numpyNet. 
+To train the networks execute the respective three train_* file in the folder numpyNet. 
