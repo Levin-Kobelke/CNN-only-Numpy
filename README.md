@@ -8,3 +8,5 @@ To compare the simple CNN to a more optimal result I fine tuned a pretrained Res
 The Training and Testing Data is located at "dropbox" link https://www.dropbox.com/sh/ul2m43h9ke4t5vc/AAAp_sEHK9yJp5Wn9noIyLjTa?dl=0
 After downloading the folders training_renamed and testing_renamed have to be copied into /numpyNet/data/ where the csv files live.
 Optionally, you could also change the "img_dir" argument for the DataLoader to the dir of the testing/training images if you do not want to have the images in the /numpyNet/data/ folder
+
+To train the network execute the three train_* files in the folder numpyNet. 
